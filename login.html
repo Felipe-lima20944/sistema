@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="PT-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            width: 320px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button[type="submit"],
+        button#admin-btn {
+            width: calc(100% - 20px);
+            background-color: #4e8cff; /* Azul mais claro */
+            color: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover,
+        button#admin-btn:hover {
+            background-color: #4c7bff; /* Alterando tom quando hover */
+        }
+        /* Estilos para o botão de administrador */
+        button#admin-btn {
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Entrar</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+        <!-- Botão "Administrador Django" -->
+        <button id="admin-btn" onclick="redirectToAdmin()">Admin Django</button>
+    </div>
+
+    <script>
+        function redirectToAdmin() {
+            window.location.href = "{% url 'admin:login' %}"; // Redireciona para a página de login do Django Admin
+        }
+    </script>
+</body>
+</html>

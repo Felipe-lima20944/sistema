@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        form h2 {
+            grid-column: 1 / -1;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="month"] {
+            width: calc(100% - 10px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            grid-column: 1 / -1;
+        }
+
+        button.export-btn {
+            background-color: #28a745;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #979797;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #493d3d4f;
+            color: rgb(22, 21, 21);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-frame {
+            height: 800px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+<button id="save-table-btn">Salvar</button>
+<button id="toggle-form-btn">Incluir Lançamentos</button>
+
+<form id="transaction-form" style="display: none;">
+    <h2>Adicionar Lançamento</h2>
+    <div>
+        <label for="cnpj-cpf">CNPJ/CPF:</label>
+        <input type="text" id="cnpj-cpf" name="cnpj-cpf">
+    </div>
+    <div>
+        <label for="credor">Credor:</label>
+        <input type="text" id="credor" name="credor">
+    </div>
+    <div>
+        <label for="natureza">Natureza:</label>
+        <input type="text" id="natureza" name="natureza">
+    </div>
+    <div>
+        <label for="no-docto">No. Doc/Título:</label>
+        <input type="text" id="no-docto" name="no-docto">
+    </div>
+    <div>
+        <label for="desconto">Desconto:</label>
+        <input type="text" id="desconto" name="desconto">
+    </div>
+    <div>
+        <label for="nfs">NFs:</label>
+        <input type="text" id="nfs" name="nfs">
+    </div>
+    <div>
+        <label for="atesto">Atesto:</label>
+        <input type="date" id="atesto" name="atesto">
+    </div>
+    <div>
+        <label for="cnds">CNDS:</label>
+        <input type="text" id="cnds" name="cnds">
+    </div>
+    <div>
+        <label for="relatorios">Relatórios:</label>
+        <input type="text" id="relatorios" name="relatorios">
+    </div>
+    <div>
+        <label for="cotacao">Cotação:</label>
+        <input type="text" id="cotacao" name="cotacao">
+    </div>
+    <div>
+        <label for="contrato-gestao">Contrato de Gestão:</label>
+        <input type="text" id="contrato-gestao" name="contrato-gestao">
+    </div>
+    <div>
+        <label for="transparencia">Transparência:</label>
+        <input type="text" id="transparencia" name="transparencia">
+    </div>
+    <div>
+        <label for="contrato">Contrato:</label>
+        <input type="text" id="contrato" name="contrato">
+    </div>
+    <div>
+        <label for="boleto">Boleto:</label>
+        <input type="text" id="boleto" name="boleto">
+    </div>
+    <div>
+        <label for="tributos">Tributos:</label>
+        <input type="text" id="tributos" name="tributos">
+    </div>
+    <div>
+        <label for="data-vencimento">Data de Vencimento:</label>
+        <input type="date" id="data-vencimento" name="data-vencimento">
+    </div>
+    <div>
+        <label for="valor-liquido">Valor Líquido (R$):</label>
+        <input type="text" id="valor-liquido" name="valor-liquido" pattern="^(?:R\$)?\s*\d+(?:,\d{1,2})?$">
+    </div>
+    <button type="submit">Adicionar Lançamento</button>
+</form>
+<button class="export-btn" id="export-excel-btn">Exportar para Excel</button>
+
+<div class="table-frame">
+    <div class="table-container">
+        <table id="transaction-table">
+            <thead>
+                <tr>
+                    <th>CNPJ/CPF</th>
+                    <th>Credor</th>
+                    <th>Natureza</th>
+                    <th>No. Doc/Título</th>
+                    <th>Desconto</th>
+                    <th>NFs</th>
+                    <th>Atesto</th>
+                    <th>CNDS</th>
+                    <th>Relatórios</th>
+                    <th>Cotação</th>
+                    <th>Contrato de Gestão</th>
+                    <th>Transparência</th>
+                    <th>Contrato</th>
+                    <th>Boleto</th>
+                    <th>Tributos</th>
+                    <th>Data de Vencimento</th>
+                    <th>Valor Líquido (R$)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Anexos</h2>
+        <ul id="pdf-list" class="pdf-list"></ul>
+        <button class="back-btn">Voltar</button>
+    </div>
+</div>
+
+<script>
+    // Variável para armazenar os dados da tabela
+    var savedData = [];
+
+    // Verifica se há dados salvos na memória local
+    var savedDataString = localStorage.getItem('savedData');
+    if (savedDataString) {
+        savedData = JSON.parse(savedDataString);
+        renderTable();
+    }
+
+    // Função para salvar os dados da tabela na memória local
+    function saveTableData() {
+        localStorage.setItem('savedData', JSON.stringify(savedData));
+    }
+
+    // Função para renderizar a tabela
+    function renderTable() {
+        var tableBody = document.getElementById('transaction-table').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+        savedData.forEach(function(data) {
+            var newRow = tableBody.insertRow();
+            newRow.innerHTML = '<td>' + data.cnpjCpf + '</td><td>' + data.credor + '</td><td>' + data.natureza + '</td><td>' + data.noDocto + '</td><td>' + data.desconto + '</td><td>' + data.nfs + '</td><td>' + data.atesto + '</td><td>' + data.cnds + '</td><td>' + data.relatorios + '</td><td>' + data.cotacao + '</td><td>' + data.contratoGestao + '</td><td>' + data.transparencia + '</td><td>' + data.contrato + '</td><td>' + data.boleto + '</td><td>' + data.tributos + '</td><td>' + data.dataVencimento + '</td><td>' + data.valorLiquido + '</td><td class="actions"><button class="delete-btn">Excluir</button></td>';
+
+            newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                var rowIndex = newRow.rowIndex - 1;
+                savedData.splice(rowIndex, 1);
+                saveTableData();
+                renderTable();
+            });
+        });
+    }
+
+    // Adiciona evento de clique no botão "Incluir Lançamentos"
+    document.getElementById('toggle-form-btn').addEventListener('click', function() {
+        var form = document.getElementById('transaction-form');
+        if (form.style.display === 'none') {
+            form.style.display = 'grid';
+            this.textContent = 'Fechar';
+        } else {
+            form.style.display = 'none';
+            this.textContent = 'Incluir Lançamentos';
+        }
+    });
+
+    // Adiciona evento de envio do formulário
+    document.getElementById('transaction-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var cnpjCpf = document.getElementById('cnpj-cpf').value;
+        var credor = document.getElementById('credor').value;
+        var natureza = document.getElementById('natureza').value;
+        var noDocto = document.getElementById('no-docto').value;
+        var desconto = document.getElementById('desconto').value;
+        var nfs = document.getElementById('nfs').value;
+        var atesto = document.getElementById('atesto').value;
+        var cnds = document.getElementById('cnds').value;
+        var relatorios = document.getElementById('relatorios').value;
+        var cotacao = document.getElementById('cotacao').value;
+        var contratoGestao = document.getElementById('contrato-gestao').value;
+        var transparencia = document.getElementById('transparencia').value;
+        var contrato = document.getElementById('contrato').value;
+        var boleto = document.getElementById('boleto').value;
+        var tributos = document.getElementById('tributos').value;
+        var dataVencimento = document.getElementById('data-vencimento').value;
+        var valorLiquido = document.getElementById('valor-liquido').value;
+
+        var newData = {
+            cnpjCpf: cnpjCpf,
+            credor: credor,
+            natureza: natureza,
+            noDocto: noDocto,
+            desconto: desconto,
+            nfs: nfs,
+            atesto: atesto,
+            cnds: cnds,
+            relatorios: relatorios,
+            cotacao: cotacao,
+            contratoGestao: contratoGestao,
+            transparencia: transparencia,
+            contrato: contrato,
+            boleto: boleto,
+            tributos: tributos,
+            dataVencimento: dataVencimento,
+            valorLiquido: valorLiquido
+        };
+
+        savedData.push(newData);
+        saveTableData();
+        renderTable();
+
+        this.reset();
+    });
+
+    // Adiciona evento de clique no botão "Salvar Tabela"
+    document.getElementById('save-table-btn').addEventListener('click', function() {
+        saveTableData();
+    });
+
+    // Adiciona evento de clique no botão "Exportar para Excel"
+    document.getElementById('export-excel-btn').addEventListener('click', function() {
+        var table = document.getElementById('transaction-table');
+        var html = table.outerHTML;
+
+        var blob = new Blob([html], {
+            type: 'application/vnd.ms-excel'
+        });
+        var url = URL.createObjectURL(blob);
+
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'transactions.xls';
+        a.click();
+    });
+
+    // Adiciona evento de clique no botão de fechar modal
+    document.getElementById('modal').querySelector('.close').addEventListener('click', function() {
+        document.getElementById('modal').style.display = 'none';
+    });
+
+    // Adiciona evento de clique no botão "Voltar" do modal
+    document.getElementById('modal').querySelector('.back-btn').addEventListener('click', function() {
+        document.getElementById('modal').style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

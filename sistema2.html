@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        form h2 {
+            grid-column: 1 / -1;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="month"] {
+            width: calc(100% - 10px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            grid-column: 1 / -1;
+        }
+
+        button.export-btn {
+            background-color: #28a745;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #979797;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #493d3d4f;
+            color: rgb(22, 21, 21);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-frame {
+            height: 800px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <button id="save-table-btn">Salvar</button>
+    <button id="toggle-form-btn">Incluir Lançamentos</button>
+
+    <form id="transaction-form" style="display: none;">
+        <h2>Adicionar Lançamento</h2>
+        <div>
+            <label for="data-lancamento">Data de Lançamento:</label>
+            <input type="date" id="data-lancamento" name="data-lancamento">
+        </div>
+        <div>
+            <label for="lancado-por">Lançado por:</label>
+            <input type="text" id="lancado-por" name="lancado-por">
+        </div>
+        <div>
+            <label for="descricao-despesa">Descrição da Despesa:</label>
+            <input type="text" id="descricao-despesa" name="descricao-despesa">
+        </div>
+        <div>
+            <label for="data-despesa">Data da Despesa:</label>
+            <input type="date" id="data-despesa" name="data-despesa">
+        </div>
+        <div>
+            <label for="data-pagamento">Data de Pagamento:</label>
+            <input type="date" id="data-pagamento" name="data-pagamento">
+        </div>
+        <div>
+            <label for="valor">Valor:</label>
+            <input type="number" id="valor" name="valor">
+        </div>
+        <div>
+            <label for="metodo-pagamento">Método de Pagamento:</label>
+            <input type="text" id="metodo-pagamento" name="metodo-pagamento">
+        </div>
+        <div>
+            <label for="numero-fatura-recibo">Número da Fatura/Recibo:</label>
+            <input type="text" id="numero-fatura-recibo" name="numero-fatura-recibo">
+        </div>
+        <div>
+            <label for="categoria-despesa">Categoria de Despesa:</label>
+            <input type="text" id="categoria-despesa" name="categoria-despesa">
+        </div>
+        <div>
+            <label for="nome-fornecedor-beneficiario">Nome do Fornecedor/Beneficiário:</label>
+            <input type="text" id="nome-fornecedor-beneficiario" name="nome-fornecedor-beneficiario">
+        </div>
+        <div>
+            <label for="metodo-recebimento">Método de Recebimento:</label>
+            <input type="text" id="metodo-recebimento" name="metodo-recebimento">
+        </div>
+        <div>
+            <label for="notas-comentarios">Notas/Comentários:</label>
+            <input type="text" id="notas-comentarios" name="notas-comentarios">
+        </div>
+        <div>
+            <label for="status-pagamento">Status de Pagamento:</label>
+            <input type="text" id="status-pagamento" name="status-pagamento">
+        </div>
+        <div>
+            <label for="aprovacao">Aprovação:</label>
+            <input type="text" id="aprovacao" name="aprovacao">
+        </div>
+        <button type="submit">Adicionar Lançamento</button>
+    </form>
+    <button class="export-btn" id="export-excel-btn">Exportar para Excel</button>
+
+    <div class="table-frame">
+        <div class="table-container">
+            <table id="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Data de Lançamento</th>
+                        <th>Lançado por</th>
+                        <th>Descrição da Despesa</th>
+                        <th>Data da Despesa</th>
+                        <th>Data de Pagamento</th>
+                        <th>Valor</th>
+                        <th>Método de Pagamento</th>
+                        <th>Número da Fatura/Recibo</th>
+                        <th>Categoria de Despesa</th>
+                        <th>Nome do Fornecedor/Beneficiário</th>
+                        <th>Método de Recebimento</th>
+                        <th>Notas/Comentários</th>
+                        <th>Status de Pagamento</th>
+                        <th>Aprovação</th>
+                        <!-- Removido o cabeçalho "Anexos" -->
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Removido o modal de anexos -->
+    
+    <script>
+        // Gera um namespace único para esta página
+        var namespace = window.location.pathname;
+
+        // Verifica se há dados salvos na memória local
+        var savedDataString = localStorage.getItem('savedData_' + namespace);
+        var savedData = savedDataString ? JSON.parse(savedDataString) : [];
+
+        // Função para salvar os dados da tabela na memória local
+        function saveTableData() {
+            localStorage.setItem('savedData_' + namespace, JSON.stringify(savedData));
+        }
+
+        // Função para renderizar a tabela
+        function renderTable() {
+            var tableBody = document.getElementById('transaction-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            savedData.forEach(function(data, index) {
+                var newRow = tableBody.insertRow();
+                newRow.innerHTML = '<td>' + data.dataLancamento + '</td><td>' + data.lancadoPor + '</td><td>' + data.descricaoDespesa + '</td><td>' + data.dataDespesa + '</td><td>' + data.dataPagamento + '</td><td>' + data.valor + '</td><td>' + data.metodoPagamento + '</td><td>' + data.numeroFaturaRecibo + '</td><td>' + data.categoriaDespesa + '</td><td>' + data.nomeFornecedorBeneficiario + '</td><td>' + data.metodoRecebimento + '</td><td>' + data.notasComentarios + '</td><td>' + data.statusPagamento + '</td><td>' + data.aprovacao + '</td><td class="actions"><button class="delete-btn" data-index="' + index + '">Excluir</button></td>';
+
+                newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                    var rowIndex = this.getAttribute('data-index');
+                    savedData.splice(rowIndex, 1);
+                    saveTableData();
+                    renderTable();
+                });
+            });
+        }
+
+        // Adiciona evento de clique no botão "Incluir Lançamentos"
+        document.getElementById('toggle-form-btn').addEventListener('click', function() {
+            var form = document.getElementById('transaction-form');
+            if (form.style.display === 'none') {
+                form.style.display = 'grid';
+                this.textContent = 'Fechar';
+            } else {
+                form.style.display = 'none';
+                this.textContent = 'Incluir Lançamentos';
+            }
+        });
+
+        // Adiciona evento de envio do formulário
+        document.getElementById('transaction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var dataLancamento = document.getElementById('data-lancamento').value;
+            var lancadoPor = document.getElementById('lancado-por').value;
+            var descricaoDespesa = document.getElementById('descricao-despesa').value;
+            var dataDespesa = document.getElementById('data-despesa').value;
+            var dataPagamento = document.getElementById('data-pagamento').value;
+            var valor = document.getElementById('valor').value;
+            var metodoPagamento = document.getElementById('metodo-pagamento').value;
+            var numeroFaturaRecibo = document.getElementById('numero-fatura-recibo').value;
+            var categoriaDespesa = document.getElementById('categoria-despesa').value;
+            var nomeFornecedorBeneficiario = document.getElementById('nome-fornecedor-beneficiario').value;
+            var metodoRecebimento = document.getElementById('metodo-recebimento').value;
+            var notasComentarios = document.getElementById('notas-comentarios').value;
+            var statusPagamento = document.getElementById('status-pagamento').value;
+            var aprovacao = document.getElementById('aprovacao').value;
+
+            var newData = {
+                dataLancamento: dataLancamento,
+                lancadoPor: lancadoPor,
+                descricaoDespesa: descricaoDespesa,
+                dataDespesa: dataDespesa,
+                dataPagamento: dataPagamento,
+                valor: valor,
+                metodoPagamento: metodoPagamento,
+                numeroFaturaRecibo: numeroFaturaRecibo,
+                categoriaDespesa: categoriaDespesa,
+                nomeFornecedorBeneficiario: nomeFornecedorBeneficiario,
+                metodoRecebimento: metodoRecebimento,
+                notasComentarios: notasComentarios,
+                statusPagamento: statusPagamento,
+                aprovacao: aprovacao
+            };
+
+            savedData.push(newData);
+            saveTableData();
+            renderTable();
+
+            this.reset();
+        });
+
+        // Adiciona evento de clique no botão "Salvar Tabela"
+        document.getElementById('save-table-btn').addEventListener('click', function() {
+            saveTableData();
+        });
+
+        // Adiciona evento de clique no botão "Exportar para Excel"
+        document.getElementById('export-excel-btn').addEventListener('click', function() {
+            var table = document.getElementById('transaction-table');
+            var html = table.outerHTML;
+
+            var blob = new Blob([html], {
+                type: 'application/vnd.ms-excel'
+            });
+            var url = URL.createObjectURL(blob);
+
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'transactions.xls';
+            a.click();
+        }); 
+
+        // Renderiza a tabela ao carregar a página
+        renderTable();
+    </script>
+
+</body>
+</html>
